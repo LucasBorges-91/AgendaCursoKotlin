@@ -4,6 +4,8 @@ import business.ContactBusiness;
 import entity.ContactEntity;
 
 import javax.swing.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -18,6 +20,8 @@ public class MainForm extends JFrame {
   private JLabel labelContactCount;
 
   private ContactBusiness mcontactBusiness;
+  private String mName = "";
+  private String mPhone = "";
 
   public MainForm() {
 
@@ -68,7 +72,26 @@ public class MainForm extends JFrame {
     buttonRemove.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
+        try {
+          mcontactBusiness.deleteContact( mName, mPhone );
+          loadContacts();
+          mName = "";
+          mPhone = "";
+        } catch ( Exception ex ) {
+          JOptionPane.showMessageDialog( new JFrame(), ex.getMessage() );
+        }
+      }
+    });
 
+    tableContacts.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+      @Override
+      public void valueChanged(ListSelectionEvent e) {
+        if ( e.getValueIsAdjusting() ) {
+          if ( tableContacts.getSelectedRow() != -1 ) {
+            mName = tableContacts.getValueAt( tableContacts.getSelectedRow(), 0 ).toString();
+            mPhone = tableContacts.getValueAt( tableContacts.getSelectedRow(), 1 ).toString();
+          }
+        }
       }
     });
   }
